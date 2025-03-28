@@ -36,7 +36,7 @@ async def recordACar(plate_number: str):
         d = await cars.insert_one(new_data)
         print(d)
         return new_data
-    add_amount = cars.update_one({"plate_number": plate_number}, {"$set": {"due_amount":(int(data['due_amount'])+50)}})
+    add_amount = await cars.update_one({"plate_number": plate_number}, {"$set": {"due_amount":(int(data['due_amount'])+50)}})
     data = await cars.find_one({"plate_number":plate_number})
     return data
     
