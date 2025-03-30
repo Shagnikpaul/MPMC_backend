@@ -23,12 +23,22 @@ async def getTolls():
     data = await getLatestToll()
     if data is None:
         raise HTTPException(
-            status_code=404, detail="No recorded tolls avaiable.") 
+            status_code=404, detail="No recorded tolls avaiable.")
     else:
         return data
 
-@app.get("/get-tolls/{plate_number}")
-async def getTolls(plate_number: str):
+
+@app.get("/get-all-tolls/")
+async def getAllTolls():
+    data = await getAllTheTolls()
+    if data is None:
+        raise HTTPException(
+            status_code=404, detail="No tolls available in the database.")
+    return data
+
+
+@app.get("/get-vehicle-tolls/{plate_number}")
+async def getVehiclesTolls(plate_number: str):
     data = await getVehicleTolls(plate_number=plate_number)
     if data is None:
         raise HTTPException(
@@ -43,6 +53,3 @@ async def payToll(toll_id: str):
         raise HTTPException(
             status_code=404, detail="The given toll payment does not exist.")
     return {"message": "Toll payment successful."}
-
-
-

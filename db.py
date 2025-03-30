@@ -43,7 +43,7 @@ async def getVehicleTolls(plate_number: str):
     if (amount == []):
         return {"message": "No recorded toll available for this vehicle..."}
     else:
-        data = TollsModel(
+        data = VehicleTollsModel(
             due_amount=amount[0]['total_fee'], tolls=amount[0]['toll_list'][::-1])
         return data
 
@@ -59,3 +59,10 @@ async def getLatestToll():
         return None
     else:
         return TollModelOut.model_validate(data)
+
+
+async def getAllTheTolls():
+    data = await tolls.find({}).to_list()
+    if data:
+        return TollsModel(tolls=data[::-1])
+    return data

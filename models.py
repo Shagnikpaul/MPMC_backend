@@ -53,7 +53,10 @@ class TollModelOut(BaseModel):
     toll_location: Optional[str] = "Unknown Toll Location"
 
 
-class TollsModel(BaseModel):
+class VehicleTollsModel(BaseModel):
     due_amount: Optional[float] = 0.0
     tolls: List[TollModelOut]
-    
+
+
+class TollsModel(BaseModel):
+    tolls: List[TollModelOut]
