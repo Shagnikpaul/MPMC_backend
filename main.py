@@ -1,10 +1,15 @@
 
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, File, UploadFile
 from db import *
 from models import *
 from fastapi.middleware.cors import CORSMiddleware
+import easyocr
+import cv2
+import numpy as np
 
+
+reader = easyocr.Reader(['en'])
 origins = ["*"]
 
 
@@ -16,6 +21,28 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.post("/detect_plate/")
+async def detect_license_plate(file: UploadFile = File(...)):
+    try:
+        # Read image file
+        contents = await file.read()
+        image = np.frombuffer(contents, np.uint8)
+        image = cv2.imdecode(image, cv2.IMREAD_COLOR)
+
+        if image is None:
+            raise HTTPException(status_code=400, detail="Invalid image file")
+
+        # Perform OCR
+        results = reader.readtext(image, detail=0)  # Extract text only
+        print('text array : ', results)
+        x: str = "".join(results)
+        x = x.replace("IND", "")
+        await recordAToll(plate_number=x)
+        return {"license_plate": x}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @app.get("/")
